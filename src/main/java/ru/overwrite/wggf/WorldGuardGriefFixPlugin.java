@@ -1,6 +1,5 @@
 package ru.overwrite.wggf;
 
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,7 +19,8 @@ public class WorldGuardGriefFixPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this.listener, this);
         this.getCommand("wggf").setExecutor(this);
 
-        new Metrics(this, 14247);
+//      Need Metrics support?
+//      new Metrics(this, 14247);
     }
 
     @Override
