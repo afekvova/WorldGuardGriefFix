@@ -1,60 +1,48 @@
 package ru.overwrite.wggf;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.overwrite.wggf.listeners.PlayerListener;
 
 public class WorldGuardGriefFixPlugin extends JavaPlugin implements Listener {
+
+    private PlayerListener listener;
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
-        Bukkit.getPluginManager().registerEvents(this, this);
+        this.listener = new PlayerListener(this);
+        Bukkit.getPluginManager().registerEvents(this.listener, this);
+        this.getCommand("wggf").setExecutor(this);
+
         new Metrics(this, 14247);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (this.getConfig().getBoolean("enable-pistons"))
-            event.setCancelled(false);
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission("wggf.command.reload")) {
+            sender.sendMessage(this.color("&cYou don't have permission!"));
+            return true;
+        }
+
+        if (args.length <= 0 || !args[0].equalsIgnoreCase("reload")) {
+            sender.sendMessage(this.color("&f[&6WGGF&f] /wggf reload - перезагрузить плагин"));
+            return true;
+        }
+
+        this.reloadConfig();
+        this.listener.loadProtectedRegion(this.getConfig());
+        sender.sendMessage(this.color("&f[&6WGGF&f] Вы успешно перезагрузили плагин!"));
+        return true;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockRetract(BlockPistonRetractEvent event) {
-        if (this.getConfig().getBoolean("enable-pistons"))
-            event.setCancelled(false);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onItemMove(InventoryMoveItemEvent event) {
-        if (this.getConfig().getBoolean("enable-minecart"))
-            event.setCancelled(false);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onWitherBlockDamage(EntityDamageByBlockEvent event) {
-        if (this.getConfig().getBoolean("enable-wither"))
-            event.setCancelled(false);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockFall(EntityChangeBlockEvent event) {
-        if (this.getConfig().getBoolean("enable-sand"))
-            event.setCancelled(false);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onEntityExplode(EntityExplodeEvent event) {
-        if (this.getConfig().getBoolean("enable-any-explotions"))
-            event.setCancelled(false);
+    private String color(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 }
 

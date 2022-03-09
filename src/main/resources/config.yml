@@ -1,0 +1,26 @@
+# -------------------------------
+# WorldGuardGriefFix by Overwrite (fork by Afek)
+# vk.com/afekvova
+# -------------------------------
+
+# Разрешить ли гриф поршнями?
+enable-pistons: true
+# Разрешить ли гриф вагонетками?
+enable-minecart: true
+# Разрешить ли визеру разрушать блоки в регионе?
+enable-wither: true
+# Разрешить ли головам визера разрушать блоки в регионе?
+enable-wither-skull: true
+# Разрешить ли любому ентити взрывать блоки в регионе?
+enable-any-explotion: true
+# Возможность засыпать регионы песком? (ВНИМАНИЕ! ВОЗМОЖЕН ДЮП РЕСУРСОВ!)
+enable-sand: true
+
+regions:
+  example:
+    x1: 1
+    y1: 2
+    z1: 1
+    x2: 1
+    y2: 2
+    z2: 3
