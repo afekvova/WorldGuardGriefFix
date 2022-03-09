@@ -1,0 +1,5 @@
+name: WorldGuardGriefFix
+version: '${project.version}'
+main: ru.overwrite.wggf.WorldGuardGriefFixPlugin
+api-version: 1.16
+authors: [ Overwrite, Afek ]
