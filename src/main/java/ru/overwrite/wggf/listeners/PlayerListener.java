@@ -3,6 +3,7 @@ package ru.overwrite.wggf.listeners;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -48,14 +49,24 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (this.checkLocation(event.getBlock().getLocation()) && this.plugin.getConfig().getBoolean("enable-pistons"))
-            event.setCancelled(false);
+        if (!this.plugin.getConfig().getBoolean("enable-pistons")) return;
+
+        for (Block block : event.getBlocks())
+            if (this.checkLocation(block.getLocation())) {
+                event.setCancelled(false);
+                return;
+            }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockRetract(BlockPistonRetractEvent event) {
-        if (this.checkLocation(event.getBlock().getLocation()) && this.plugin.getConfig().getBoolean("enable-pistons"))
-            event.setCancelled(false);
+        if (!this.plugin.getConfig().getBoolean("enable-pistons")) return;
+
+        for (Block block : event.getBlocks())
+            if (this.checkLocation(block.getLocation())) {
+                event.setCancelled(false);
+                return;
+            }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
