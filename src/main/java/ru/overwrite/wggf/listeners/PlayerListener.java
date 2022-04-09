@@ -3,6 +3,7 @@ package ru.overwrite.wggf.listeners;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -81,10 +82,13 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockFall(BlockPhysicsEvent event) {
-        if (this.checkLocation(event.getBlock().getLocation()) && this.plugin.getConfig().getBoolean("enable-sand"))
-            event.setCancelled(false);
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBlockFall(EntityChangeBlockEvent event) {
+        Block block = event.getBlock();
+        if(event.getTo() != Material.SAND && block.getType() != Material.AIR || !(this.checkLocation(block.getLocation()) && this.plugin.getConfig().getBoolean("enable-sand"))) return;
+
+        event.setCancelled(true);
+        block.setType(Material.SAND);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
