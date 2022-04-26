@@ -3,6 +3,7 @@ version: '${project.version}'
 main: ru.overwrite.wggf.WorldGuardGriefFixPlugin
 api-version: 1.13
 authors: [ Overwrite, Afek ]
+website: [ OverwriteMC*975*#3748, t.me/afekvova ] // Overwrite, Afek
 
 commands:
   wggf:
