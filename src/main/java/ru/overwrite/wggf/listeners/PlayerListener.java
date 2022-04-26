@@ -20,6 +20,7 @@ import ru.overwrite.wggf.WorldGuardGriefFixPlugin;
 import ru.overwrite.wggf.objects.ProtectedRegion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -82,13 +83,16 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
     }
 
+    private final List<Material> fallingBlocks = Arrays.asList(Material.SAND, Material.GRAVEL, Material.ANVIL, Material.CHIPPED_ANVIL, Material.DAMAGED_ANVIL, Material.DRAGON_EGG, Material.RED_SAND);
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockFall(EntityChangeBlockEvent event) {
         Block block = event.getBlock();
-        if(event.getTo() != Material.SAND && block.getType() != Material.AIR || !(this.checkLocation(block.getLocation()) && this.plugin.getConfig().getBoolean("enable-sand"))) return;
+
+        if(!this.fallingBlocks.contains(event.getTo()) || !this.checkLocation(block.getLocation()) || !this.plugin.getConfig().getBoolean("enable-sand")) return;
 
         event.setCancelled(true);
-        block.setType(Material.SAND);
+        block.setType(event.getTo());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
