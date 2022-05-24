@@ -83,18 +83,6 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
     }
 
-    private final List<Material> fallingBlocks = Arrays.asList(Material.SAND, Material.GRAVEL, Material.ANVIL, Material.CHIPPED_ANVIL, Material.DAMAGED_ANVIL, Material.DRAGON_EGG, Material.RED_SAND);
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onBlockFall(EntityChangeBlockEvent event) {
-        Block block = event.getBlock();
-
-        if(!this.fallingBlocks.contains(event.getTo()) || !this.checkLocation(block.getLocation()) || !this.plugin.getConfig().getBoolean("enable-sand")) return;
-
-        event.setCancelled(true);
-        block.setType(event.getTo());
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (this.checkLocation(event.getLocation()) && this.plugin.getConfig().getBoolean("enable-any-explotions"))
