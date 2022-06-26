@@ -9,6 +9,9 @@ enable-pistons: true
 enable-minecart: true
 # Разрешить ли визеру разрушать блоки в регионе?
 enable-wither: true
+
+
+
 # Разрешить ли головам визера разрушать блоки в регионе?
 enable-wither-skull: true
 # Разрешить ли любому ентити взрывать блоки в регионе?
