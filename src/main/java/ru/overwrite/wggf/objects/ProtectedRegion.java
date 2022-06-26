@@ -2,12 +2,15 @@ package ru.overwrite.wggf.objects;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProtectedRegion {
 
+    @Getter
+    String world;
     int x1, y1, z1, x2, y2, z2;
 
     public boolean contains(int x, int y, int z) {

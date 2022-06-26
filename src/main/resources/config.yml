@@ -18,6 +18,7 @@ enable-sand: true
 
 regions:
   example:
+    world: 'world'
     x1: 1
     y1: 2
     z1: 1

@@ -39,13 +39,14 @@ public class PlayerListener implements Listener {
             this.protectedRegionList.clear();
 
         for (String regionName : configuration.getConfigurationSection("regions").getKeys(false)) {
+            String world = configuration.getString("regions." + regionName + ".world", "world");
             int x1 = configuration.getInt("regions." + regionName + ".x1", 0);
             int y1 = configuration.getInt("regions." + regionName + ".y1", 0);
             int z1 = configuration.getInt("regions." + regionName + ".z1", 0);
             int x2 = configuration.getInt("regions." + regionName + ".x2", 0);
             int y2 = configuration.getInt("regions." + regionName + ".y2", 0);
             int z2 = configuration.getInt("regions." + regionName + ".z2", 0);
-            this.protectedRegionList.add(new ProtectedRegion(x1, y1, z1, x2, y2, z2));
+            this.protectedRegionList.add(new ProtectedRegion(world, x1, y1, z1, x2, y2, z2));
         }
     }
 
@@ -99,7 +100,7 @@ public class PlayerListener implements Listener {
         if (location == null) return false;
 
         for (ProtectedRegion protectedRegion : this.protectedRegionList)
-            if (protectedRegion.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ()))
+            if (protectedRegion.getWorld().equalsIgnoreCase(location.getWorld().getName()) && protectedRegion.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ()))
                 return false;
 
         return true;
