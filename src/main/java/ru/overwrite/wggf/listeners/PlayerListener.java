@@ -1,6 +1,8 @@
 package ru.overwrite.wggf.listeners;
 
+import lombok.val;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -16,12 +18,17 @@ import ru.overwrite.wggf.WorldGuardGriefFixPlugin;
 import ru.overwrite.wggf.objects.ProtectedRegion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlayerListener implements Listener {
 
     WorldGuardGriefFixPlugin plugin;
     List<ProtectedRegion> protectedRegionList = new ArrayList<>();
+
+    List<Material> fallingBlocks = Arrays.asList(Material.SAND,
+            Material.GRAVEL,
+            Material.ANVIL);
 
     public PlayerListener(WorldGuardGriefFixPlugin plugin) {
         this.plugin = plugin;
@@ -42,6 +49,17 @@ public class PlayerListener implements Listener {
             int z2 = configuration.getInt("regions." + regionName + ".z2", 0);
             this.protectedRegionList.add(new ProtectedRegion(world, x1, y1, z1, x2, y2, z2));
         }
+    }
+
+
+    @EventHandler
+    public void onBlockFall(EntityChangeBlockEvent event) {
+        val block = event.getBlock();
+        val to = event.getTo();
+        if (!this.plugin.getConfig().getBoolean("fix-block-fall")) return;
+        
+        if (this.fallingBlocks.contains(block.getType()) && to == Material.AIR)
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

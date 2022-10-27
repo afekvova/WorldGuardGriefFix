@@ -8,6 +8,8 @@ enable-wither: true
 enable-wither-skull: true
 # Разрешить ли любому ентити взрывать блоки в регионе?
 enable-any-explotion: true
+# Фиксит выпадение любого падающего яблока при падении
+fix-block-fall: true
 
 # Блоки на которые не распространяется гриф теми или иными способами
 excluded-blocks:
