@@ -1,11 +1,9 @@
 package ru.overwrite.wggf;
 
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Commands;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
@@ -18,7 +16,7 @@ import ru.overwrite.wggf.listeners.PlayerListener;
 @Website("OverwriteMC*975*#3748, t.me/afekvova")
 @Authors({@Author("Overwrite"), @Author("Afek")})
 @Commands(@org.bukkit.plugin.java.annotation.command.Command(name = "wggf", aliases = {"worldguardgrieffix"}))
-public class WorldGuardGriefFixPlugin extends JavaPlugin implements Listener {
+public class WorldGuardGriefFixPlugin extends JavaPlugin {
 
     private PlayerListener listener;
 
