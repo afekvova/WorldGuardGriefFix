@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -51,13 +52,14 @@ public class PlayerListener implements Listener {
         }
     }
 
-
     @EventHandler
     public void onBlockFall(EntityChangeBlockEvent event) {
         val block = event.getBlock();
         val to = event.getTo();
-        if (!this.plugin.getConfig().getBoolean("fix-block-fall")) return;
-        
+
+        if (!this.plugin.getConfig().getBoolean("fix-block-fall") || event.getEntityType() != EntityType.FALLING_BLOCK)
+            return;
+
         if (this.fallingBlocks.contains(block.getType()) && to == Material.AIR)
             event.setCancelled(true);
     }
@@ -92,12 +94,21 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onWitherBlockDamage(EntityChangeBlockEvent event) {
+    public void onEntityChangeEvent(EntityChangeBlockEvent event) {
         event.setCancelled(false);
-        for (String blocks : plugin.getConfig().getStringList("excluded-blocks")) {
-            if (blocks.contains(event.getBlock().getType().name()))
-                event.setCancelled(true);
-        }
+
+        if (plugin.getConfig().getStringList("excluded-blocks")
+                .stream().map(String::toLowerCase).toList()
+                .contains(event.getBlock().getType().name().toLowerCase()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWitherBlockDamage(EntityChangeBlockEvent event) {
+        if (!plugin.getConfig().getStringList("excluded-blocks")
+                .stream().map(String::toLowerCase).toList()
+                .contains(event.getBlock().getType().name().toLowerCase()) && this.checkLocation(event.getBlock().getLocation()) && event.getEntityType() == EntityType.WITHER && this.plugin.getConfig().getBoolean("enable-wither"))
+            event.setCancelled(false);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -120,5 +131,16 @@ public class PlayerListener implements Listener {
                 return false;
 
         return true;
+    }
+
+    @EventHandler
+    public void onCreeperExplosion(EntityExplodeEvent event) {
+        if (event.getEntityType() != EntityType.CREEPER) return;
+
+        if (this.checkLocation(event.getLocation()) && this.plugin.getConfig().getBoolean("enable-any-explotions")) {
+            Creeper creeper = (Creeper) event.getEntity();
+            event.blockList().clear();
+            event.getEntity().getWorld().createExplosion(event.getLocation(), creeper.isPowered() ? 6 : 3);
+        }
     }
 }
