@@ -1,3 +1,7 @@
+# -------------------------------
+# WorldGuardGriefFix by Overwrite
+# -------------------------------
+
 # Разрешить ли гриф поршнями?
 enable-pistons: true
 # Разрешить ли гриф вагонетками?
@@ -8,8 +12,6 @@ enable-wither: true
 enable-wither-skull: true
 # Разрешить ли любому ентити взрывать блоки в регионе?
 enable-any-explotion: true
-# Фиксит выпадение любого падающего блока при падении
-fix-block-fall: true
 
 # Блоки на которые не распространяется гриф теми или иными способами
 excluded-blocks:
@@ -21,7 +23,6 @@ excluded-blocks:
 
 regions:
   example:
-    world: 'world'
     x1: 1
     y1: 2
     z1: 1

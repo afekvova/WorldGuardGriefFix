@@ -1,23 +1,33 @@
 package ru.overwrite.wggf.objects;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
-
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProtectedRegion {
-
-    @Getter
-    String world;
-    int x1, y1, z1, x2, y2, z2;
-
-    public boolean contains(int x, int y, int z) {
-        return (y >= this.y1 && y <= this.y2 && contains(x, z));
-    }
-
-    public boolean contains(int x, int z) {
-        return (x >= this.x1 && z >= this.z1 && x <= this.x2 && z <= this.z2);
-    }
+	
+  private final int x1;
+  
+  private final int y1;
+  
+  private final int z1;
+  
+  private final int x2;
+  
+  private final int y2;
+  
+  private final int z2;
+  
+  public ProtectedRegion(int x1, int y1, int z1, int x2, int y2, int z2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.z1 = z1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.z2 = z2;
+  }
+  
+  public boolean contains(int x, int y, int z) {
+    return (y >= y1 && y <= y2 && contains(x, z));
+  }
+  
+  public boolean contains(int x, int z) {
+    return (x >= x1 && z >= z1 && x <= x2 && z <= z2);
+  }
 }
