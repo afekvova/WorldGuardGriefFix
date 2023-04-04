@@ -1,0 +1,9 @@
+name: WorldGuardGriefFix
+main: ru.overwrite.wggf.WorldGuardGriefFixPlugin
+authors:
+  - Afek
+  - OverWrite
+version: 4.0
+api-version: 1.13
+commands:
+  wggf:
