@@ -28,6 +28,7 @@ public class PlayerListener implements Listener {
     List<ProtectedRegion> protectedRegionList = new ArrayList<>();
 
     List<Material> fallingBlocks = Arrays.asList(Material.SAND, Material.GRAVEL, Material.ANVIL); // Временно, потому перепишу
+    List<Material> interactBlocks = Arrays.asList(Material.AIR, Material.WATER, Material.SNOW, Material.LAVA);
 
     public PlayerListener(WorldGuardGriefFixPlugin plugin) {
         this.plugin = plugin;
@@ -96,10 +97,14 @@ public class PlayerListener implements Listener {
         val entity = event.getEntity();
         val block = event.getBlock();
         val to = event.getTo();
+
         if (!(entity instanceof FallingBlock) || !this.plugin.getConfig().getBoolean("enable-falling-block"))
             return;
 
-        if (block.getType() == Material.AIR && this.fallingBlocks.contains(to)) {
+        if (this.interactBlocks.contains(block.getType()) &&
+                this.fallingBlocks.contains(to) &&
+                this.checkLocation(block.getLocation()) &&
+                !this.plugin.getConfig().getStringList("excluded-blocks").contains(block.getType().name())) {
             event.setCancelled(true); // Отменяем евент, чтобы сыпущий блок не выпал после падения
             block.setType(to); // Ставим тот же блок
         }
