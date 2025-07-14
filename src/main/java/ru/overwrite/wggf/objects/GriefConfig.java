@@ -11,6 +11,7 @@ public class GriefConfig {
     private boolean enableWitherSkull;
     private boolean enableAnyExplosion;
     private boolean enableFallingBlock;
+    private boolean enableFishing;
 
     public void loadConfig(FileConfiguration configuration) {
         this.enablePistons = configuration.getBoolean("enable-pistons", true);
@@ -19,5 +20,6 @@ public class GriefConfig {
         this.enableWitherSkull = configuration.getBoolean("enable-wither-skull", true);
         this.enableAnyExplosion = configuration.getBoolean("enable-any-explosion", true);
         this.enableFallingBlock = configuration.getBoolean("enable-falling-block", true);
+        this.enableFishing = configuration.getBoolean("enable-fishing", true);
     }
 }

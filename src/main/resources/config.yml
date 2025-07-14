@@ -14,6 +14,8 @@ enable-wither-skull: true
 enable-any-explosion: true
 # Фикс выпадения сыпучих блоков, после приземления
 enable-falling-block: true
+# Фикс притягивания сущностей удочками
+enable-fishing: true
 
 # Блоки на которые не распространяется гриф теми или иными способами
 excluded-blocks:
@@ -22,6 +24,10 @@ excluded-blocks:
   - IRON_BLOCK
   - EMERALD_BLOCK
   - EMERALD_ORE
+
+# Миры на которые не распространяются разрешения грифа
+excluded-worlds:
+  - spawn
 
 # Защищённые регионы
 regions:

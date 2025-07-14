@@ -16,19 +16,18 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import ru.overwrite.wggf.WorldGuardGriefFixPlugin;
 import ru.overwrite.wggf.objects.GriefConfig;
 import ru.overwrite.wggf.objects.ProtectedRegion;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PlayerListener implements Listener {
 
     private final List<ProtectedRegion> protectedRegionList = new ArrayList<>();
     private final Set<Material> excludedBlocks = EnumSet.noneOf(Material.class);
+    private final Set<String> excludedWorlds = new HashSet<>();
     @Getter
     private final GriefConfig griefConfig = new GriefConfig();
 
@@ -36,6 +35,7 @@ public class PlayerListener implements Listener {
         FileConfiguration configuration = plugin.getConfig();
         this.loadProtectedRegion(configuration);
         this.loadExcludedBlocks(configuration);
+        this.loadExcludedWorlds(configuration);
         this.griefConfig.loadConfig(configuration);
     }
 
@@ -63,9 +63,18 @@ public class PlayerListener implements Listener {
         }
     }
 
+    public void loadExcludedWorlds(FileConfiguration configuration) {
+        if (!excludedWorlds.isEmpty()) {
+            excludedWorlds.clear();
+        }
+        excludedWorlds.addAll(configuration.getStringList("excluded-worlds"));
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (!griefConfig.isEnablePistons()) return;
+        if (!griefConfig.isEnablePistons()) {
+            return;
+        }
         for (Block block : event.getBlocks()) {
             if (!excludedBlocks.contains(block.getType()) && checkLocation(block.getLocation())) {
                 event.setCancelled(false);
@@ -76,13 +85,15 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockRetract(BlockPistonRetractEvent event) {
-        if (!griefConfig.isEnablePistons()) return;
-
-        for (Block block : event.getBlocks())
+        if (!griefConfig.isEnablePistons()) {
+            return;
+        }
+        for (Block block : event.getBlocks()) {
             if (this.checkLocation(block.getLocation())) {
                 event.setCancelled(false);
                 return;
             }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -102,38 +113,45 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW) // Спасибо, Витя
     public void onLowFallingBlock(EntityChangeBlockEvent event) {
         Entity entity = event.getEntity();
-
-        if (!(entity instanceof FallingBlock) || !griefConfig.isEnableFallingBlock())
+        if (!(entity instanceof FallingBlock) || !griefConfig.isEnableFallingBlock()) {
             return;
-
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMonitorFallingBlock(EntityChangeBlockEvent event) {
         Entity entity = event.getEntity();
-
-        if (!(entity instanceof FallingBlock) || !griefConfig.isEnableFallingBlock())
+        if (!(entity instanceof FallingBlock) || !griefConfig.isEnableFallingBlock()) {
             return;
-
+        }
         event.setCancelled(false);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onFish(PlayerFishEvent event) {
+        if (griefConfig.isEnableFishing()) {
+            event.setCancelled(false);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (checkLocation(event.getLocation()) && griefConfig.isEnableAnyExplosion()) {
             event.setCancelled(false);
-        } else if (checkLocation(event.getLocation()) && griefConfig.isEnableWitherSkull()
-                && event.getEntityType() == EntityType.WITHER_SKULL) {
+        } else if (checkLocation(event.getLocation()) && griefConfig.isEnableWitherSkull() && event.getEntityType() == EntityType.WITHER_SKULL) {
             event.setCancelled(false);
         }
     }
 
     private boolean checkLocation(Location location) {
         if (location == null) {
+            return false;
+        }
+        if (excludedWorlds.contains(location.getWorld().getName())) {
             return false;
         }
         for (ProtectedRegion protectedRegion : protectedRegionList) {

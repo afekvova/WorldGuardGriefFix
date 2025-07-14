@@ -30,6 +30,7 @@ public class WorldGuardGriefFixCommand implements CommandExecutor {
         FileConfiguration configuration = plugin.getConfig();
         plugin.getListener().loadProtectedRegion(configuration);
         plugin.getListener().loadExcludedBlocks(configuration);
+        plugin.getListener().loadExcludedWorlds(configuration);
         plugin.getListener().getGriefConfig().loadConfig(configuration);
         sender.sendMessage("§f[§6WGGF§f] Конфиг был перезагружен!");
         return true;
