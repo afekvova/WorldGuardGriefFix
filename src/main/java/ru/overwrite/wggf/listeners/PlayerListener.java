@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -43,13 +44,14 @@ public class PlayerListener implements Listener {
         if (!this.protectedRegionList.isEmpty()) {
             this.protectedRegionList.clear();
         }
-        for (String regionName : configuration.getConfigurationSection("regions").getKeys(false)) {
-            int x1 = configuration.getInt("regions." + regionName + ".x1", 0);
-            int y1 = configuration.getInt("regions." + regionName + ".y1", 0);
-            int z1 = configuration.getInt("regions." + regionName + ".z1", 0);
-            int x2 = configuration.getInt("regions." + regionName + ".x2", 0);
-            int y2 = configuration.getInt("regions." + regionName + ".y2", 0);
-            int z2 = configuration.getInt("regions." + regionName + ".z2", 0);
+        ConfigurationSection regions = configuration.getConfigurationSection("regions");
+        for (String regionName : regions.getKeys(false)) {
+            int x1 = regions.getInt(regionName + ".x1", 0);
+            int y1 = regions.getInt(regionName + ".y1", 0);
+            int z1 = regions.getInt(regionName + ".z1", 0);
+            int x2 = regions.getInt(regionName + ".x2", 0);
+            int y2 = regions.getInt(regionName + ".y2", 0);
+            int z2 = regions.getInt(regionName + ".z2", 0);
             protectedRegionList.add(new ProtectedRegion(x1, y1, z1, x2, y2, z2));
         }
     }
@@ -89,7 +91,7 @@ public class PlayerListener implements Listener {
             return;
         }
         for (Block block : event.getBlocks()) {
-            if (this.checkLocation(block.getLocation())) {
+            if (checkLocation(block.getLocation())) {
                 event.setCancelled(false);
                 return;
             }
@@ -98,14 +100,20 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemMove(InventoryMoveItemEvent event) {
-        if (griefConfig.isEnableMinecart()) {
+        if (!griefConfig.isEnableMinecart()) {
+            return;
+        }
+        if (checkLocation(event.getDestination().getLocation())) {
             event.setCancelled(false);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWitherBlockDamage(EntityChangeBlockEvent event) {
-        if (griefConfig.isEnableWither() && event.getEntityType() == EntityType.WITHER) {
+        if (!griefConfig.isEnableWither()) {
+            return;
+        }
+        if (event.getEntityType() == EntityType.WITHER && checkLocation(event.getBlock().getLocation())) {
             event.setCancelled(false);
             if (excludedBlocks.contains(event.getBlock().getType())) {
                 event.setCancelled(true);
@@ -115,34 +123,47 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW) // Спасибо, Витя
     public void onLowFallingBlock(EntityChangeBlockEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof FallingBlock) || !griefConfig.isEnableFallingBlock()) {
+        if (!griefConfig.isEnableFallingBlock()) {
             return;
         }
-        event.setCancelled(true);
+        Entity entity = event.getEntity();
+        if (entity instanceof FallingBlock block && checkLocation(block.getLocation())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMonitorFallingBlock(EntityChangeBlockEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof FallingBlock) || !griefConfig.isEnableFallingBlock()) {
+        if (!griefConfig.isEnableFallingBlock()) {
             return;
         }
-        event.setCancelled(false);
+        Entity entity = event.getEntity();
+        if (entity instanceof FallingBlock block && checkLocation(block.getLocation())) {
+            event.setCancelled(false);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onFish(PlayerFishEvent event) {
-        if (griefConfig.isEnableFishing()) {
+        if (!griefConfig.isEnableFishing()) {
+            return;
+        }
+        Entity caught = event.getCaught();
+        if (caught != null && checkLocation(caught.getLocation())) {
             event.setCancelled(false);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (checkLocation(event.getLocation()) && griefConfig.isEnableAnyExplosion()) {
+        if (!checkLocation(event.getLocation())) {
+            return;
+        }
+        if (griefConfig.isEnableAnyExplosion()) {
             event.setCancelled(false);
-        } else if (checkLocation(event.getLocation()) && griefConfig.isEnableWitherSkull() && event.getEntityType() == EntityType.WITHER_SKULL) {
+            return;
+        }
+        if (griefConfig.isEnableWitherSkull() && event.getEntityType() == EntityType.WITHER_SKULL) {
             event.setCancelled(false);
         }
     }
